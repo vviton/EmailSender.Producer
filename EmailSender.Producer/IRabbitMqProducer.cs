@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace EmailSender.Producer
 {
-    public interface IEmailProducer
+    public interface IRabbitMqProducer<T>
     {
+        public void SendToQueue(T message);
     }
 }

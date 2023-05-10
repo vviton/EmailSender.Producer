@@ -10,8 +10,18 @@ namespace EmailSender.Producer
 {
     public class EmailProducer : IRabbitMqProducer<Email>
     {
-        private string _rabbitConnection;
-   
+        private readonly string _rabbitConnection;
+
+        public EmailProducer()
+        {
+            _rabbitConnection = "localhost";
+        }
+
+        public EmailProducer(string rabbitConnection)
+        {
+            _rabbitConnection = rabbitConnection;
+        }
+
         public void SendToQueue(Email message)
         {
             var factory = new ConnectionFactory { HostName = _rabbitConnection };
@@ -26,8 +36,10 @@ namespace EmailSender.Producer
                         autoDelete: false,
                         arguments: null
                         );
-                    var jsonEmail = JsonConvert.SerializeObject(message);
 
+                    var jsonEmail = JsonConvert.SerializeObject(message);
+                    var body = Encoding.UTF8.GetBytes(jsonEmail);
+                    emailChannel.BasicPublish(exchange:"",routingKey:"email_message",body:body);
                 }
             }
         }
