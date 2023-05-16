@@ -10,22 +10,17 @@ namespace EmailSender.Producer
 {
     public class EmailProducer : IRabbitMqProducer<Email>
     {
-        private readonly string _rabbitConnection;
+        private readonly ConnectionFactory _factory;
 
-        public EmailProducer()
+        public EmailProducer(string hostName, int portNumber)
         {
-            _rabbitConnection = "localhost";
-        }
-
-        public EmailProducer(string rabbitConnection)
-        {
-            _rabbitConnection = rabbitConnection;
+            _factory = new ConnectionFactory() { HostName = hostName, Port = portNumber };
         }
 
         public void SendToQueue(Email message)
         {
-            var factory = new ConnectionFactory { HostName = _rabbitConnection };
-            using (var connection = factory.CreateConnection())
+         
+            using (var connection = _factory.CreateConnection())
             {
                 using (var emailChannel = connection.CreateModel())
                 {
